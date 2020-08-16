@@ -1,0 +1,26 @@
+Options +FollowSymLinks
+
+RewriteEngine on
+RewriteBase /
+
+# перенаправление на https
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,NE,R=301]
+
+# перенаправление на backend
+RewriteCond %{HTTP_HOST} ^(www\.)?backend\.acdbot\.ru$ [NC]
+RewriteCond %{REQUEST_URI} !^/backend
+RewriteRule ^(.*)$ backend/$1 [L]
+
+# Если каталог или файл существует, используйте запрос напрямую
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+# В противном случае переслать запрос в index.php
+RewriteRule . index.php
+
+RewriteCond %{THE_REQUEST} \s/+(.+?)/+[?\s]
+RewriteRule /$ /%1 [R,L]
+
+# использовать index.php в качестве индексного файла
+DirectoryIndex index.php
+
